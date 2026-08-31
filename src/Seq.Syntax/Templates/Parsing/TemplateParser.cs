@@ -14,9 +14,12 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Seq.Syntax.Templates.Ast;
+using Seq.Syntax.Templates.Messages;
 
 namespace Seq.Syntax.Templates.Parsing;
 
+/// <summary>Parser for the Seq.Syntax templating language.</summary>
+/// <seealso cref="MessageTemplateParser"/>
 class TemplateParser
 {
     readonly TemplateTokenizer _tokenizer = new();

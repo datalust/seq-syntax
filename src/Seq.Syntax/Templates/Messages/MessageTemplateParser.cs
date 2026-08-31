@@ -14,15 +14,17 @@
 
 using System.Globalization;
 using System.Text;
+using Seq.Syntax.Templates.Parsing;
 using Seq.Syntax.Templates.Rendering;
 
 namespace Seq.Syntax.Templates.Messages;
 
 /// <summary>
-/// A minimal message-template parser vendored from Serilog. Destructuring hints (<c>@</c>/<c>$</c>)
+/// A minimal message template (https://messagetemplates.org) parser vendored from Serilog. Destructuring hints (<c>@</c>/<c>$</c>)
 /// are accepted and discarded; malformed holes are treated as literal text, matching Serilog's
 /// best-effort behavior.
 /// </summary>
+/// <seealso cref="TemplateParser"/>
 static class MessageTemplateParser
 {
     static readonly TextToken EmptyTextToken = new("");
