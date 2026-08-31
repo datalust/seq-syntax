@@ -17,13 +17,9 @@ using Seq.Syntax.Templates.Themes;
 namespace Seq.Syntax.Templates.Encoding;
 
 /// <summary>
-/// Encodes template output. Template evaluation produces a sequence of runs, each classified by
-/// a <see cref="TemplateThemeStyle"/> and as either <em>content</em> (event-derived text) or
-/// <em>markup</em> (text the template author controls: literal template text, padding, and
-/// <c>unsafe()</c> output). The theme, when present, delimits every run; the escaper, when
-/// present, transforms content — and only content — before it is written.
+/// Applies theming and/or content escaping to template output.
 /// </summary>
-public class TemplateOutputEncoder
+public sealed class TemplateOutputEncoder
 {
     static readonly TemplateThemeStyle[] Styles = Enum.GetValues<TemplateThemeStyle>();
 
@@ -34,8 +30,8 @@ public class TemplateOutputEncoder
     /// <summary>
     /// Construct a <see cref="TemplateOutputEncoder"/>.
     /// </summary>
-    /// <param name="theme">Optionally, a theme delimiting classified output runs.</param>
-    /// <param name="escaper">Optionally, an escaper applied to event-derived content.</param>
+    /// <param name="theme">If specified, inserts theming delimiters before and after template elements for output.</param>
+    /// <param name="escaper">If specified, applies escaping to content substituted into template holes.</param>
     public TemplateOutputEncoder(TemplateTheme? theme = null, TemplateOutputEscaper? escaper = null)
     {
         Theme = theme;
@@ -55,9 +51,9 @@ public class TemplateOutputEncoder
     /// control characters or ANSI escape sequences into the terminal.
     /// </summary>
     /// <param name="theme">The theme to apply.</param>
-    public static TemplateOutputEncoder Ansi(TemplateTheme theme)
+    public static TemplateOutputEncoder Ansi(TemplateTheme? theme)
     {
-        if (theme == null) throw new ArgumentNullException(nameof(theme));
+        ArgumentNullException.ThrowIfNull(theme);
         return new TemplateOutputEncoder(theme, TemplateOutputEscaper.Terminal);
     }
 

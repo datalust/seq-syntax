@@ -34,7 +34,7 @@ public static class EventIdHash
     /// Murmur32 by default, and we should probably head in the same direction here.</remarks>
     public static uint Compute(string messageTemplate)
     {
-        if (messageTemplate == null) throw new ArgumentNullException(nameof(messageTemplate));
+        ArgumentNullException.ThrowIfNull(messageTemplate);
 
         // Jenkins one-at-a-time https://en.wikipedia.org/wiki/Jenkins_hash_function
         unchecked

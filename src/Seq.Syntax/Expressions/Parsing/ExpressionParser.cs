@@ -33,7 +33,7 @@ class ExpressionParser
     public bool TryParse(string filterExpression,
         [MaybeNullWhen(false)] out Expression root, [MaybeNullWhen(true)] out string error)
     {
-        if (filterExpression == null) throw new ArgumentNullException(nameof(filterExpression));
+        ArgumentNullException.ThrowIfNull(filterExpression);
 
         var tokenList = _tokenizer.TryTokenize(filterExpression);
         if (!tokenList.HasValue)

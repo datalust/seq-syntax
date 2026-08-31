@@ -107,8 +107,8 @@ static class Operators
 
     public static bool SameOperator(string op1, string op2)
     {
-        if (op1 == null) throw new ArgumentNullException(nameof(op1));
-        if (op2 == null) throw new ArgumentNullException(nameof(op2));
+        ArgumentNullException.ThrowIfNull(op1);
+        ArgumentNullException.ThrowIfNull(op2);
 
         return OperatorComparer.Equals(op1, op2);
     }

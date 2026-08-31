@@ -30,7 +30,7 @@ class TemplateParser
         [MaybeNullWhen(false)] out Template parsed,
         [MaybeNullWhen(true)] out string error)
     {
-        if (template == null) throw new ArgumentNullException(nameof(template));
+        ArgumentNullException.ThrowIfNull(template);
 
         var tokenList = _tokenizer.TryTokenize(template);
         if (!tokenList.HasValue)

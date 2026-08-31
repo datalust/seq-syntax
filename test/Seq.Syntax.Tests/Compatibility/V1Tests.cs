@@ -69,7 +69,7 @@ public class V1Tests
         Assert.Equal("false", RenderV1("@l = 'Warning'", evt));
         Assert.Equal("\"Information\"", RenderV1("ToString(@l)", evt));
 
-        Assert.True(V1.TryParseTemplate("{@l}|{@l:u3}", null, null, null, null, out var template, out var error), error);
+        Assert.True(V1.TryParseTemplate("{@l}|{@l:u3}", null, null, null, out var template, out var error), error);
         var output = new StringWriter();
         template.Format(evt, output);
         Assert.Equal("Information|INF", output.ToString());
@@ -94,7 +94,7 @@ public class V1Tests
         Assert.Equal("[\"12.35\"]", RenderV1("@r", evt));
         Assert.Equal("\"12.35\"", RenderV1("@r[0]", evt));
 
-        Assert.True(V1.TryParseTemplate("{#each r in @r}[{r}]{#end}", CultureInfo.InvariantCulture, null, null, null, out var template, out var error), error);
+        Assert.True(V1.TryParseTemplate("{#each r in @r}[{r}]{#end}", CultureInfo.InvariantCulture, null, null, out var template, out var error), error);
         var output = new StringWriter();
         template.Format(evt, output);
         Assert.Equal("[12.35]", output.ToString());
@@ -131,7 +131,7 @@ public class V1Tests
     {
         var evt = Some.InformationEvent("Hello, {Name}!", "nblumhardt");
 
-        Assert.True(V1.TryParseTemplate("{@m} for {@p['Name']}", null, null, null, null, out var template, out var error), error);
+        Assert.True(V1.TryParseTemplate("{@m} for {@p['Name']}", null, null, null, out var template, out var error), error);
 
         var output = new StringWriter();
         template.Format(evt, output);

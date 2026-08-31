@@ -19,7 +19,6 @@ using Seq.Syntax.Templates.Compilation;
 using Seq.Syntax.Templates.Compilation.NameResolution;
 using Seq.Syntax.Templates.Encoding;
 using Seq.Syntax.Templates.Parsing;
-using Seq.Syntax.Templates.Themes;
 using System.Text.Json.Nodes;
 
 // ReSharper disable MemberCanBePrivate.Global, UnusedMember.Global
@@ -45,8 +44,8 @@ public class ExpressionTemplate
         [MaybeNullWhen(false)] out ExpressionTemplate result,
         [MaybeNullWhen(true)] out string error)
     {
-        if (template == null) throw new ArgumentNullException(nameof(template));
-        return TryParse(template, null, null, null, null, out result, out error);
+        ArgumentNullException.ThrowIfNull(template);
+        return TryParse(template, null, null, null, out result, out error);
     }
 
     /// <summary>
@@ -59,24 +58,17 @@ public class ExpressionTemplate
     /// <param name="error">A description of the error, if unsuccessful.</param>
     /// <param name="nameResolver">Optionally, a <see cref="NameResolver"/>
     /// with which to resolve function names that appear in the template.</param>
-    /// <param name="theme">Optionally, a theme for ANSI terminal output; shorthand for
-    /// <c>encoder: TemplateOutputEncoder.Ansi(theme)</c>, and exclusive with <paramref name="encoder"/>.</param>
     /// <param name="encoder">Optionally, an encoder applying a theme and/or escaper to template output.</param>
     /// <returns><c langword="true">true</c> if the template was well-formed.</returns>
-    /// <exception cref="ArgumentException">Both <paramref name="theme"/> and <paramref name="encoder"/>
-    /// are supplied.</exception>
     public static bool TryParse(
         string template,
         CultureInfo? culture,
         NameResolver? nameResolver,
-        TemplateTheme? theme,
         TemplateOutputEncoder? encoder,
         [MaybeNullWhen(false)] out ExpressionTemplate result,
         [MaybeNullWhen(true)] out string error)
     {
-        if (template == null) throw new ArgumentNullException(nameof(template));
-
-        var outputEncoder = CreateOutputEncoder(theme, encoder);
+        ArgumentNullException.ThrowIfNull(template);
 
         var templateParser = new TemplateParser();
         if (!templateParser.TryParse(template, out var parsed, out error))
@@ -87,12 +79,13 @@ public class ExpressionTemplate
 
         var planned = TemplateLocalNameBinder.BindLocalValueNames(parsed);
 
+        encoder ??= TemplateOutputEncoder.Default;
         result = new ExpressionTemplate(
             TemplateCompiler.Compile(
                 planned,
                 culture,
-                TemplateFunctionNameResolver.Build(nameResolver, planned, outputEncoder.HasEscaper),
-                outputEncoder));
+                TemplateFunctionNameResolver.Build(nameResolver, planned, encoder.HasEscaper),
+                encoder));
 
         return true;
     }
@@ -110,21 +103,14 @@ public class ExpressionTemplate
     /// embedded values.</param>
     /// <param name="nameResolver">Optionally, a <see cref="NameResolver"/>
     /// with which to resolve function names that appear in the template.</param>
-    /// <param name="theme">Optionally, a theme for ANSI terminal output; shorthand for
-    /// <c>encoder: TemplateOutputEncoder.Ansi(theme)</c>, and exclusive with <paramref name="encoder"/>.</param>
     /// <param name="encoder">Optionally, an encoder applying a theme and/or escaper to template output.</param>
-    /// <exception cref="ArgumentException">Both <paramref name="theme"/> and <paramref name="encoder"/>
-    /// are supplied, or the template is malformed.</exception>
     public ExpressionTemplate(
         string template,
         CultureInfo? culture = null,
         NameResolver? nameResolver = null,
-        TemplateTheme? theme = null,
         TemplateOutputEncoder? encoder = null)
     {
-        if (template == null) throw new ArgumentNullException(nameof(template));
-
-        var outputEncoder = CreateOutputEncoder(theme, encoder);
+        ArgumentNullException.ThrowIfNull(template);
 
         var templateParser = new TemplateParser();
         if (!templateParser.TryParse(template, out var parsed, out var error))
@@ -132,25 +118,13 @@ public class ExpressionTemplate
 
         var planned = TemplateLocalNameBinder.BindLocalValueNames(parsed);
 
+        encoder ??= TemplateOutputEncoder.Default;
         _compiled = TemplateCompiler.Compile(
             planned,
             culture,
-            TemplateFunctionNameResolver.Build(nameResolver, planned, outputEncoder.HasEscaper),
-            outputEncoder);
+            TemplateFunctionNameResolver.Build(nameResolver, planned, encoder.HasEscaper),
+            encoder);
     }
-
-    internal static TemplateOutputEncoder CreateOutputEncoder(TemplateTheme? theme, TemplateOutputEncoder? encoder)
-    {
-        if (theme != null && encoder != null)
-            throw new ArgumentException(
-                $"Supply either `theme` or `encoder`, but not both. A theme is combined with a custom escaper by constructing a {nameof(TemplateOutputEncoder)} directly.");
-
-        if (theme != null)
-            return TemplateOutputEncoder.Ansi(theme);
-
-        return encoder ?? TemplateOutputEncoder.Default;
-    }
-
 
     /// <summary>
     /// Format <paramref name="eventJson"/> into <paramref name="output"/>.
