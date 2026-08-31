@@ -139,11 +139,24 @@ public static class SeqExpression
     /// Determine if the specified text is a valid identifier.
     /// </summary>
     /// <param name="identifier">The text to check.</param>
-    /// <returns>True if the text can be used verbatim as a property name.</returns>
+    /// <returns>True if the text is a syntactically valid identifier. Identiers used as bare property names must
+    /// also not be keywords.</returns>
+    /// <seealso cref="IsKeyword"/>
     public static bool IsValidIdentifier(string identifier)
     {
         return identifier.Length != 0 &&
                !char.IsDigit(identifier[0]) &&
                identifier.All(ch => char.IsLetter(ch) || char.IsDigit(ch) || ch == '_');
+    }
+
+    /// <summary>
+    /// Determine if the specified text is an expression language keyword (such as <c>and</c>).
+    /// </summary>
+    /// <param name="identifier">The text to check.</param>
+    /// <seealso cref="IsValidIdentifier"/>
+    public static bool IsKeyword(string identifier)
+    {
+        return ExpressionTokenizer.Keywords.AsEnumerable()
+            .Any(k => k.Text.Equals(identifier, StringComparison.OrdinalIgnoreCase));
     }
 }

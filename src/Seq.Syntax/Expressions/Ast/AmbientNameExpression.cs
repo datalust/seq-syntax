@@ -16,13 +16,10 @@ namespace Seq.Syntax.Expressions.Ast;
 
 class AmbientNameExpression : Expression
 {
-    readonly bool _requiresEscape;
-
     public AmbientNameExpression(string name, bool isBuiltIn)
     {
         PropertyName = name ?? throw new ArgumentNullException(nameof(name));
         IsBuiltIn = isBuiltIn;
-        _requiresEscape = !SeqExpression.IsValidIdentifier(name);
     }
 
     public string PropertyName { get; }
@@ -31,7 +28,10 @@ class AmbientNameExpression : Expression
 
     public override string ToString()
     {
-        if (_requiresEscape)
+        var requiresEscape = !IsBuiltIn &&
+                             (!SeqExpression.IsValidIdentifier(PropertyName) || SeqExpression.IsKeyword(PropertyName));
+
+        if (requiresEscape)
             return $"@Properties['{SeqExpression.EscapeStringContent(PropertyName)}']";
 
         return (IsBuiltIn ? "@" : "") + PropertyName;

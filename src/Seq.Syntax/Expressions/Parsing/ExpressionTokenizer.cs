@@ -21,7 +21,7 @@ class ExpressionTokenizer : Tokenizer<ExpressionToken>
 {
     readonly ExpressionToken[] _singleCharOps = new ExpressionToken[128];
 
-    readonly ExpressionKeyword[] _keywords =
+    public static readonly ExpressionKeyword[] Keywords =
     [
         new("and", ExpressionToken.And),
         new("in", ExpressionToken.In),
@@ -63,17 +63,6 @@ class ExpressionTokenizer : Tokenizer<ExpressionToken>
         _singleCharOps[']'] = ExpressionToken.RBracket;
         _singleCharOps['*'] = ExpressionToken.Asterisk;
         _singleCharOps['?'] = ExpressionToken.QuestionMark;
-    }
-
-    public TokenList<ExpressionToken> GreedyTokenize(TextSpan textSpan)
-    {
-        // Dropping error info off for now
-        return new TokenList<ExpressionToken>(
-        [
-            .. Tokenize(textSpan)
-                .TakeWhile(r => r.HasValue)
-                .Select(r => new Token<ExpressionToken>(r.Value, r.Location.Until(r.Remainder)))
-        ]);
     }
 
     public IEnumerable<Result<ExpressionToken>> LazyTokenize(TextSpan span)
@@ -193,7 +182,7 @@ class ExpressionTokenizer : Tokenizer<ExpressionToken>
 
     bool TryGetKeyword(TextSpan span, out ExpressionToken keyword)
     {
-        foreach (var kw in _keywords)
+        foreach (var kw in Keywords)
         {
             if (span.EqualsValueIgnoreCase(kw.Text))
             {
