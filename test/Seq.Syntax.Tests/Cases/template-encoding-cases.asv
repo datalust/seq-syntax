@@ -1,0 +1,12 @@
+// The escaper marks each escaped content run with brackets; template-author markup and
+// `unsafe()` output pass through unmarked. The rendered event is
+// `Some.InformationEvent("Hello, {Name}!", "nblumhardt")`.
+{'world'}!                        ⇶ [world]!
+{substring('world', 0, 2)}!       ⇶ [wo]!
+{unsafe('world')}!                ⇶ world!
+|{somethingnothere}|              ⇶ ||
+{@Message}                        ⇶ [Hello, ][nblumhardt][!]
+{@Level}                          ⇶ [Information]
+{ {a: 1} }                        ⇶ [{]["a"][:][1][}]
+{ [1, 'x'] }                      ⇶ [[][1][,]["x"][]]
+{unsafe(@Message)}                ⇶ Hello, nblumhardt!

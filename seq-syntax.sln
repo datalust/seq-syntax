@@ -1,0 +1,102 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.223
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{91E482DE-E1E7-4CE1-9511-C0AF07F3648A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B03B3086-D197-4B32-9AE2-8536C345EA2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{0F8E84A5-9520-433A-BFC7-776C300ECC76}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+		RunLocalSmtp.ps1 = RunLocalSmtp.ps1
+		Directory.Version.props = Directory.Version.props
+		Build.ps1 = Build.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "asset", "asset", "{AC60371C-2888-45BB-9770-2A690DEA80FA}"
+	ProjectSection(SolutionItems) = preProject
+		asset\seq-app-mail.png = asset\seq-app-mail.png
+		asset\seq-mail.png = asset\seq-mail.png
+		asset\seq-syntax.png = asset\seq-syntax.png
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seq.Syntax", "src\Seq.Syntax\Seq.Syntax.csproj", "{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Seq.Syntax.Tests", "test\Seq.Syntax.Tests\Seq.Syntax.Tests.csproj", "{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{A5CC96EF-1E35-4836-9EE6-11F114D3E41D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{6D4A81AD-7209-4848-AFF5-232E4E3FDF41}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{A39C23D2-F2C0-258D-165A-CF1E7FEE6E7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemingDemo", "demo\ThemingDemo\ThemingDemo.csproj", "{0AD27F74-1BDB-471A-9342-8343AF395FEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Debug|x64.Build.0 = Debug|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Debug|x86.Build.0 = Debug|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Release|x64.ActiveCfg = Release|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Release|x64.Build.0 = Release|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Release|x86.ActiveCfg = Release|Any CPU
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E}.Release|x86.Build.0 = Release|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Debug|x64.Build.0 = Debug|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Debug|x86.Build.0 = Debug|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Release|x64.ActiveCfg = Release|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Release|x64.Build.0 = Release|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Release|x86.ActiveCfg = Release|Any CPU
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0}.Release|x86.Build.0 = Release|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Debug|x64.Build.0 = Debug|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Debug|x86.Build.0 = Debug|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Release|x64.ActiveCfg = Release|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Release|x64.Build.0 = Release|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Release|x86.ActiveCfg = Release|Any CPU
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AFB27DF3-BCB7-4CAE-9951-270B5319B61E} = {91E482DE-E1E7-4CE1-9511-C0AF07F3648A}
+		{A836BDA9-335E-49E1-AA68-DA3D8B6DABA0} = {B03B3086-D197-4B32-9AE2-8536C345EA2D}
+		{6D4A81AD-7209-4848-AFF5-232E4E3FDF41} = {A5CC96EF-1E35-4836-9EE6-11F114D3E41D}
+		{0AD27F74-1BDB-471A-9342-8343AF395FEA} = {A39C23D2-F2C0-258D-165A-CF1E7FEE6E7B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EB6672D6-318E-493E-8B60-77F5A7A90E66}
+	EndGlobalSection
+EndGlobal

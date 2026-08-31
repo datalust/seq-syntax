@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Description>Template and expression evaluation using a syntax based on the Seq query language.</Description>
+        <Authors>Datalust</Authors>
+        <PackageProjectUrl>https://github.com/datalust/seq-app-mail</PackageProjectUrl>
+        <PackageIcon>seq-syntax.png</PackageIcon>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/datalust/seq-app-mail</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Seq.Syntax.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="../../asset/seq-syntax.png" Pack="true" Visible="false" PackagePath="" />
+        <PackageReference Include="Superpower" Version="3.2.1" />
+    </ItemGroup>
+    
+</Project>
