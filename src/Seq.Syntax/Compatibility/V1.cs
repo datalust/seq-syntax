@@ -41,9 +41,9 @@ public static class V1
         [MaybeNullWhen(false)] out CompiledExpression result,
         [MaybeNullWhen(true)] out string error)
     {
-        if (expression == null) throw new ArgumentNullException(nameof(expression));
-        if (nameResolver == null) throw new ArgumentNullException(nameof(nameResolver));
-        
+        ArgumentNullException.ThrowIfNull(expression);
+        ArgumentNullException.ThrowIfNull(nameResolver);
+
         var expressionParser = new ExpressionParser();
         if (!expressionParser.TryParse(expression, out var root, out error))
         {
@@ -64,14 +64,11 @@ public static class V1
         string template,
         CultureInfo? culture,
         NameResolver? nameResolver,
-        TemplateTheme? theme,
         TemplateOutputEncoder? encoder,
         [MaybeNullWhen(false)] out ExpressionTemplate result,
         [MaybeNullWhen(true)] out string error)
     {
-        if (template == null) throw new ArgumentNullException(nameof(template));
-
-        var outputEncoder = ExpressionTemplate.CreateOutputEncoder(theme, encoder);
+        ArgumentNullException.ThrowIfNull(template);
 
         var templateParser = new TemplateParser();
         if (!templateParser.TryParse(template, out var parsed, out error))
@@ -84,12 +81,13 @@ public static class V1
 
         var planned = TemplateLocalNameBinder.BindLocalValueNames(parsed);
 
+        encoder ??= TemplateOutputEncoder.Default;
         result = new ExpressionTemplate(
             TemplateCompiler.Compile(
                 planned,
                 culture,
-                TemplateFunctionNameResolver.Build(WithV1Functions(nameResolver), planned, outputEncoder.HasEscaper),
-                outputEncoder));
+                TemplateFunctionNameResolver.Build(WithV1Functions(nameResolver), planned, encoder.HasEscaper),
+                encoder));
 
         return true;
     }

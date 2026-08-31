@@ -9,9 +9,9 @@ namespace Seq.Syntax.Tests.Templates;
 
 public class ThemingTests
 {
-    static string Render(string template, JsonObject evt, TemplateTheme? theme = null, TemplateOutputEncoder? encoder = null)
+    static string Render(string template, JsonObject evt, TemplateOutputEncoder? encoder = null)
     {
-        var compiled = new ExpressionTemplate(template, theme: theme, encoder: encoder);
+        var compiled = new ExpressionTemplate(template, encoder: encoder);
         var output = new StringWriter();
         compiled.Format(evt, output);
         return output.ToString();
@@ -179,22 +179,12 @@ public class ThemingTests
     }
 
     [Fact]
-    public void SupplyingBothThemeAndEncoderThrows()
-    {
-        Assert.Throws<ArgumentException>(() =>
-            new ExpressionTemplate("-", theme: TemplateTheme.Code, encoder: TemplateOutputEncoder.Html));
-
-        Assert.Throws<ArgumentException>(() =>
-            ExpressionTemplate.TryParse("-", null, null, TemplateTheme.Code, TemplateOutputEncoder.Html, out _, out _));
-    }
-
-    [Fact]
     public void TruncatedMessageRecoversNeutralStyling()
     {
         var evt = MessageEvent(string.Concat(Enumerable.Repeat("{A}", 200)));
         evt["A"] = new string('x', 1000);
 
-        var actual = Render("{@Message}", evt, theme: TemplateTheme.Code);
+        var actual = Render("{@Message}", evt, encoder: TemplateOutputEncoder.Ansi(TemplateTheme.Code));
 
         Assert.Equal(16 * 1024 + "\x1b[0m".Length, actual.Length);
         Assert.EndsWith("\x1b[0m", actual);
@@ -211,7 +201,7 @@ public class ThemingTests
         var evt = MessageEvent("{A}");
         evt["A"] = "x";
 
-        Assert.Equal("\x1b[38;5;159mx\x1b[0m", Render("{@Message}", evt, theme: custom));
+        Assert.Equal("\x1b[38;5;159mx\x1b[0m", Render("{@Message}", evt, encoder: TemplateOutputEncoder.Ansi(custom)));
     }
 
     const string Hostile = "\x1b[31m<script>";
@@ -272,7 +262,7 @@ public class ThemingTests
     [Fact]
     public void AnsiThemedOutputIsTerminalSafeByDefault()
     {
-        var actual = Render("{@Message}", HostileEvent(includePreRenderedMessage: true), theme: TemplateTheme.Code);
+        var actual = Render("{@Message}", HostileEvent(includePreRenderedMessage: true), encoder: TemplateOutputEncoder.Ansi(TemplateTheme.Code));
 
         // The theme's own sequences survive; event-derived ESC characters do not.
         Assert.Equal("\x1b[38;5;0253mrendered [31m<script>\x1b[0m", actual);

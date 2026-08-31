@@ -145,7 +145,7 @@ class LinqExpressionCompiler : SeqExpressionTransformer<ExpressionBody>
     public static Evaluatable Compile(Expression expression, CultureInfo? formatProvider,
         NameResolver nameResolver)
     {
-        if (expression == null) throw new ArgumentNullException(nameof(expression));
+        ArgumentNullException.ThrowIfNull(expression);
         var compiler = new LinqExpressionCompiler(formatProvider, nameResolver);
         var body = compiler.Transform(expression);
         return LX.Lambda<Evaluatable>(body, compiler.Context).Compile();

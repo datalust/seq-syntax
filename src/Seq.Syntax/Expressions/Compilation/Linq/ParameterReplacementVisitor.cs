@@ -28,8 +28,8 @@ class ParameterReplacementVisitor : ExpressionVisitor
 
     ParameterReplacementVisitor(ParameterExpression[] from, ParameterExpression[] to)
     {
-        if (from == null) throw new ArgumentNullException(nameof(from));
-        if (to == null) throw new ArgumentNullException(nameof(to));
+        ArgumentNullException.ThrowIfNull(from);
+        ArgumentNullException.ThrowIfNull(to);
         if (from.Length != to.Length) throw new InvalidOperationException("Mismatched parameter lists");
         _from = from;
         _to = to;

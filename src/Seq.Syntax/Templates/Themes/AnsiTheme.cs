@@ -32,7 +32,7 @@ public class AnsiTheme : TemplateTheme
     /// <exception cref="ArgumentNullException">When <paramref name="ansiStyles"/> is <see langword="null"/>.</exception>
     public AnsiTheme(IReadOnlyDictionary<TemplateThemeStyle, string> ansiStyles)
     {
-        if (ansiStyles is null) throw new ArgumentNullException(nameof(ansiStyles));
+        ArgumentNullException.ThrowIfNull(ansiStyles);
         _ansiStyles = ansiStyles.ToDictionary(kv => kv.Key, kv => kv.Value);
     }
 
@@ -45,8 +45,8 @@ public class AnsiTheme : TemplateTheme
     /// <exception cref="ArgumentNullException">When either argument is <see langword="null"/>.</exception>
     public AnsiTheme(AnsiTheme baseTheme, IReadOnlyDictionary<TemplateThemeStyle, string> ansiStyles)
     {
-        if (baseTheme is null) throw new ArgumentNullException(nameof(baseTheme));
-        if (ansiStyles is null) throw new ArgumentNullException(nameof(ansiStyles));
+        ArgumentNullException.ThrowIfNull(baseTheme);
+        ArgumentNullException.ThrowIfNull(ansiStyles);
         _ansiStyles = new Dictionary<TemplateThemeStyle, string>(baseTheme._ansiStyles);
         foreach (var (style, ansiStyle) in ansiStyles)
             _ansiStyles[style] = ansiStyle;

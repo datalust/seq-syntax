@@ -36,7 +36,7 @@ var events = new[]
 Section("No theme (the default identity encoder)");
 RenderAll(new ExpressionTemplate(textTemplate), events);
 
-foreach (var (name, theme) in new (string, TemplateTheme)[]
+foreach (var (name, theme) in new[]
          {
              ("Code", TemplateTheme.Code),
              ("Grayscale", TemplateTheme.Grayscale),
@@ -45,11 +45,11 @@ foreach (var (name, theme) in new (string, TemplateTheme)[]
          })
 {
     Section($"TemplateTheme.{name}");
-    RenderAll(new ExpressionTemplate(textTemplate, theme: theme), events);
+    RenderAll(new ExpressionTemplate(textTemplate, encoder: TemplateOutputEncoder.Ansi(theme)), events);
 }
 
 Section("Level styling and alignment across Seq's level vocabulary — {@Level,-12:t4} {@Level}");
-var levels = new ExpressionTemplate("{@Level,-12:t4} {@Level}\n", theme: TemplateTheme.Code);
+var levels = new ExpressionTemplate("{@Level,-12:t4} {@Level}\n", encoder: TemplateOutputEncoder.Ansi(TemplateTheme.Code));
 foreach (var spelling in new[] { "trace", "verbose", "dbug", "info", "notice", "warn", "eror", "fatal", "critical", "emerg", "alert", "panic", "OK" })
     levels.Format(Event("-", level: spelling), Console.Out);
 
@@ -69,7 +69,7 @@ var mel = new ExpressionTemplate(
     "{#end}" +
     "      {@Message}\n" +
     "{@Exception}",
-    theme: melon);
+    encoder: TemplateOutputEncoder.Ansi(melon));
 
 mel.Format(Event("Host listening at {ListenUri}",
     new { ListenUri = "https://hello-world.local", SourceContext = "ThemingDemo.Program" }), Console.Out);
@@ -85,7 +85,7 @@ mel.Format(Event("We've reached the end of the line",
 
 Section("Terminal safety: themed output strips event-derived control characters");
 var hostile = Event("Deleting {Path}", new { Path = "\x1b[33;1mC:\\WINDOWS\x1b[0m" }, level: "Warning");
-new ExpressionTemplate("[{@Level:u3}] {@Message}\n", theme: TemplateTheme.Code).Format(hostile, Console.Out);
+new ExpressionTemplate("[{@Level:u3}] {@Message}\n", encoder: TemplateOutputEncoder.Ansi(TemplateTheme.Code)).Format(hostile, Console.Out);
 
 Section("TemplateOutputEncoder.Html: content is escaped; unsafe() passes markup through");
 var htmlTemplate = new ExpressionTemplate(

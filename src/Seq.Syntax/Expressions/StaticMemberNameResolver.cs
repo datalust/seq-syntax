@@ -30,7 +30,7 @@ public class StaticMemberNameResolver : NameResolver
     /// <param name="type">A <see cref="Type"/> with public static members implementing runtime functions.</param>
     public StaticMemberNameResolver(Type type)
     {
-        if (type == null) throw new ArgumentNullException(nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         _methods = type
             .GetTypeInfo()

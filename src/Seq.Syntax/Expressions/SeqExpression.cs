@@ -39,7 +39,7 @@ public static class SeqExpression
         CultureInfo? formatProvider = null,
         NameResolver? nameResolver = null)
     {
-        if (expression == null) throw new ArgumentNullException(nameof(expression));
+        ArgumentNullException.ThrowIfNull(expression);
         if (!TryCompileImpl(expression, formatProvider, nameResolver, out var filter, out var error))
             throw new ArgumentException(error);
 
@@ -62,7 +62,7 @@ public static class SeqExpression
         // ReSharper disable once OutParameterValueIsAlwaysDiscarded.Global
         [MaybeNullWhen(true)] out string error)
     {
-        if (expression == null) throw new ArgumentNullException(nameof(expression));
+        ArgumentNullException.ThrowIfNull(expression);
         return TryCompileImpl(expression, null, null, out result, out error);
     }
 
@@ -85,8 +85,8 @@ public static class SeqExpression
         [MaybeNullWhen(false)] out CompiledExpression result,
         [MaybeNullWhen(true)] out string error)
     {
-        if (expression == null) throw new ArgumentNullException(nameof(expression));
-        if (nameResolver == null) throw new ArgumentNullException(nameof(nameResolver));
+        ArgumentNullException.ThrowIfNull(expression);
+        ArgumentNullException.ThrowIfNull(nameResolver);
         return TryCompileImpl(expression, formatProvider, nameResolver, out result, out error);
     }
 
@@ -118,7 +118,7 @@ public static class SeqExpression
     // ReSharper disable once UnusedMember.Global
     public static string EscapeLikeExpressionContent(string text)
     {
-        if (text == null) throw new ArgumentNullException(nameof(text));
+        ArgumentNullException.ThrowIfNull(text);
         return EscapeStringContent(text)
             .Replace("%", "%%")
             .Replace("_", "__");
@@ -131,7 +131,7 @@ public static class SeqExpression
     /// <returns>The text with any special values escaped.</returns>
     public static string EscapeStringContent(string text)
     {
-        if (text == null) throw new ArgumentNullException(nameof(text));
+        ArgumentNullException.ThrowIfNull(text);
         return text.Replace("'", "''");
     }
 

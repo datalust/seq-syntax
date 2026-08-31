@@ -25,13 +25,10 @@ static class Combinators
         TokenListParser<TKind, TModifier> modify,
         Func<TOperator, TResult, TResult, TModifier, TResult> apply)
     {
-        if (@operator == null)
-            throw new ArgumentNullException(nameof (@operator));
-        if (operand == null)
-            throw new ArgumentNullException(nameof (operand));
-        if (modify == null) throw new ArgumentNullException(nameof(modify));
-        if (apply == null)
-            throw new ArgumentNullException(nameof (apply));
+        ArgumentNullException.ThrowIfNull(@operator);
+        ArgumentNullException.ThrowIfNull(operand);
+        ArgumentNullException.ThrowIfNull(modify);
+        ArgumentNullException.ThrowIfNull(apply);
 
         return input =>
         {
