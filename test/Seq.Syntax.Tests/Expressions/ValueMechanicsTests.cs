@@ -5,10 +5,6 @@ using Xunit;
 
 namespace Seq.Syntax.Tests.Expressions;
 
-/// <summary>
-/// Durable checks from the PLAN.md Step 4 spike: the `JsonNode` mechanics the value model
-/// depends on, and the sharing hazards that make clone-on-insert unconditional.
-/// </summary>
 public class ValueMechanicsTests
 {
     [Fact]
