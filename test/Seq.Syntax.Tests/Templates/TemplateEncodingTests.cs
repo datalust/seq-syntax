@@ -39,6 +39,41 @@ public class TemplateEncodingTests
     }
 
     [Fact]
+    public void UnsafeWithoutEscaperIsRejectedAtCompileTime()
+    {
+        Assert.Throws<ArgumentException>(() => new ExpressionTemplate("{unsafe(Markup)}"));
+
+        Assert.Throws<ArgumentException>(() => new ExpressionTemplate(
+            "{unsafe(Markup)}",
+            encoder: new TemplateOutputEncoder(MarkerTheme.Instance)));
+    }
+
+    [Theory]
+    [InlineData("{ToString(unsafe(Markup))}")]     // consumed by another function
+    [InlineData("{ToUpper(unsafe(Markup))}")]      // coerced to a string
+    [InlineData("{Substring(unsafe(Markup),0,1)}")]
+    [InlineData("{ {a: unsafe(Markup)} }")]        // nested in an object literal
+    [InlineData("{[unsafe(Markup)]}")]             // nested in an array literal
+    [InlineData("{#if unsafe(Markup) like '%b%'}y{#end}")]
+    public void MisplacedUnsafeValueFailsWhenRendered(string template)
+    {
+        var ex = Assert.Throws<InvalidOperationException>(
+            () => RenderHtmlEncoded(template, "{Markup}", "<b>hi</b>"));
+
+        Assert.Equal("`unsafe()` values can only be substituted directly into template output.", ex.Message);
+    }
+
+    [Theory]
+    [InlineData("{unsafe(Markup)}", "<b>hi</b>")]
+    [InlineData("{unsafe(Markup),12}", "   <b>hi</b>")]
+    [InlineData("{#each x in [1]}{unsafe(Markup)}{#end}", "<b>hi</b>")]
+    [InlineData("{Coalesce(unsafe(Markup), 'x')}", "<b>hi</b>")]
+    public void UnsafeValueSubstitutedDirectlyBypassesEscaper(string template, string expected)
+    {
+        Assert.Equal(expected, RenderHtmlEncoded(template, "{Markup}", "<b>hi</b>"));
+    }
+
+    [Fact]
     public void HtmlEncoderPreservesUnsafeOutput()
     {
         var actual = RenderHtmlEncoded("{unsafe(Markup)} & {Markup}", "{Markup}", "<b>hi</b>");

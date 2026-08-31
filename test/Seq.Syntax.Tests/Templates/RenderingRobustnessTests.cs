@@ -56,13 +56,6 @@ public class RenderingRobustnessTests
         Assert.Equal(1024, Render("{@Message}", MessageEvent(messageTemplate, "5")).Length);
     }
 
-    // `unsafe()` with no escaper configured has nothing to bypass, and is a graceful no-op.
-    [Fact]
-    public void UnsafeWithoutEncoderRendersValue()
-    {
-        Assert.Equal("x", Render("{unsafe(A)}", Event("{\"A\":\"x\"}")));
-    }
-
     // A repeated hole over a large property could amplify output without bound; message output is capped.
     [Fact]
     public void MessageExpansionIsLengthLimited()

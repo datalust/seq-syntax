@@ -23,25 +23,29 @@ namespace Seq.Syntax.Templates.Compilation.Unsafe;
 /// <summary>
 /// Implements the <c>unsafe()</c> function in expression templates: the wrapped value is asserted
 /// to already be valid output-language text, so it bypasses the template's output escaper (while
-/// remaining subject to the theme). When the template has no escaper there is nothing to bypass,
-/// and <c>unsafe()</c> is registered as an identity pass-through.
+/// remaining subject to the theme). A template with no escaper has nothing to bypass, so
+/// <c>unsafe()</c> is rejected when the template is compiled.
 /// </summary>
 class UnsafeOutputFunction : NameResolver
 {
     const string FunctionName = "unsafe";
 
-    readonly string _implementationName;
+    readonly bool _escaperPresent;
 
     public UnsafeOutputFunction(bool escaperPresent)
     {
-        _implementationName = escaperPresent ? nameof(PreEncode) : nameof(Identity);
+        _escaperPresent = escaperPresent;
     }
 
     public override bool TryResolveFunctionName(string name, [MaybeNullWhen(false)] out MethodInfo implementation)
     {
         if (name.Equals(FunctionName, StringComparison.OrdinalIgnoreCase))
         {
-            implementation = typeof(UnsafeOutputFunction).GetMethod(_implementationName,
+            if (!_escaperPresent)
+                throw new ArgumentException(
+                    $"The `{FunctionName}()` function requires an output escaper; the template's encoder has none, so there is no escaping to bypass.");
+
+            implementation = typeof(UnsafeOutputFunction).GetMethod(nameof(PreEncode),
                 BindingFlags.Static | BindingFlags.Public)!;
             return true;
         }
@@ -53,10 +57,5 @@ class UnsafeOutputFunction : NameResolver
     public static EvaluationResult PreEncode(EvaluationResult inner)
     {
         return JsonValue.Create(new PreEncodedValue(inner))!;
-    }
-
-    public static EvaluationResult Identity(EvaluationResult inner)
-    {
-        return inner;
     }
 }

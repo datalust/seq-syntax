@@ -11,11 +11,17 @@ class PreEncodedValue
         Inner = inner;
     }
 
+    /// <summary>
+    /// Raised where <c>unsafe()</c> output lands somewhere other than direct hole substitution —
+    /// passed on to another function, or nested in an object or array literal.
+    /// </summary>
+    public static Exception Misplaced()
+    {
+        return new InvalidOperationException("`unsafe()` values can only be substituted directly into template output.");
+    }
+
     public override string ToString()
     {
-        // Reached when `unsafe()` output lands somewhere other than direct hole substitution —
-        // for example, embedded inside a rendered object literal — where the escaper cannot be
-        // selectively bypassed.
-        throw new InvalidOperationException("`unsafe()` values can only be substituted directly into template output.");
+        throw Misplaced();
     }
 }

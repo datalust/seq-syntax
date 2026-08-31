@@ -16,6 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Seq.Syntax.Templates.Encoding;
 
 namespace Seq.Syntax.Expressions.Runtime;
 
@@ -35,11 +36,21 @@ static class Values
     [return: NotNullIfNotNull(nameof(node))]
     public static JsonNode? Clone(JsonNode? node)
     {
-        // Typed scalars degrade to their JSON string forms on insertion; `DeepClone()` does this
-        // for the serializer-supported ones, but a `LevelValue` would clone as a `{"Name": ...}`
-        // object.
-        if (node is JsonValue value && Underlying(value) is LevelValue level)
-            return JsonValue.Create(level.Name);
+        if (node is JsonValue value)
+        {
+            switch (Underlying(value))
+            {
+                // Typed scalars degrade to their JSON string forms on insertion; `DeepClone()` does
+                // this for the serializer-supported ones, but a `LevelValue` would clone as a
+                // `{"Name": ...}` object.
+                case LevelValue level:
+                    return JsonValue.Create(level.Name);
+                // `unsafe()` output has no JSON form to degrade to: `DeepClone()` would serialize
+                // the wrapper's own fields into the container.
+                case PreEncodedValue:
+                    throw PreEncodedValue.Misplaced();
+            }
+        }
 
         return node?.DeepClone();
     }
@@ -107,6 +118,7 @@ static class Values
                     return TryGetElementString(element, out str);
                 case string s: str = s; return true;
                 case LevelValue level: str = level.Name; return true;
+                case PreEncodedValue: throw PreEncodedValue.Misplaced();
             }
         }
 
@@ -177,13 +189,13 @@ static class Values
             return true;
         }
 
-        if (TryGetNumeric(node, out var ticks) && ticks >= long.MinValue && ticks <= long.MaxValue)
+        if (TryGetNumeric(node, out var ticks) && ticks is >= long.MinValue and <= long.MaxValue)
         {
             timeSpan = TimeSpan.FromTicks((long)ticks);
             return true;
         }
 
-        timeSpan = default;
+        timeSpan = TimeSpan.Zero;
         return false;
     }
 

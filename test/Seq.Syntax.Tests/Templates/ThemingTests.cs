@@ -173,12 +173,9 @@ public class ThemingTests
     }
 
     [Fact]
-    public void UnsafeIsANoOpUnderThemeWithoutEscaper()
+    public void UnsafeUnderThemeWithoutEscaperIsRejected()
     {
-        var evt = MessageEvent("-");
-        evt["A"] = "x";
-
-        Assert.Equal("<SecondaryText>x</SecondaryText>", RenderMarked("{unsafe(A)}", evt));
+        Assert.Throws<ArgumentException>(() => RenderMarked("{unsafe(A)}", MessageEvent("-")));
     }
 
     [Fact]
