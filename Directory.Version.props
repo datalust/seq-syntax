@@ -1,5 +1,6 @@
 <Project>
     <PropertyGroup>
+        <!-- When updating the major version, update the assembly name in Seq.Syntax.csproj -->
         <VersionPrefix>2.0.0</VersionPrefix>
     </PropertyGroup>
 </Project>

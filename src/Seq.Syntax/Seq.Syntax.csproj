@@ -4,6 +4,11 @@
         <TargetFramework>net8.0</TargetFramework>
         <Description>Template and expression evaluation using a syntax based on the Seq query language.</Description>
         <Authors>Datalust</Authors>
+        <!-- Apps are hosted in `seqcli`, which also ships Seq.Syntax at different versions. We use versioned
+             assembly names so that the host version and app package version can coexist side-by-side. A future
+             EXE-based .NET app hosting model will eventually remove this requirement. -->
+        <AssemblyName>Seq.Syntax.V2</AssemblyName>
+        <PackageId>Seq.Syntax</PackageId>
         <PackageProjectUrl>https://github.com/datalust/seq-app-mail</PackageProjectUrl>
         <PackageIcon>seq-syntax.png</PackageIcon>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
