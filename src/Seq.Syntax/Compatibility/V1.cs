@@ -41,7 +41,6 @@ public static class V1
         [MaybeNullWhen(true)] out string error)
     {
         ArgumentNullException.ThrowIfNull(expression);
-        ArgumentNullException.ThrowIfNull(nameResolver);
 
         var expressionParser = new ExpressionParser();
         if (!expressionParser.TryParse(expression, out var root, out error))
