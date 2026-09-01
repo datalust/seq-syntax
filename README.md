@@ -88,7 +88,7 @@ terminal output:
 ```csharp
 var template = new ExpressionTemplate(
     "[{@Timestamp:HH:mm:ss} {@Level:u3}] {@Message}\n{@Exception}",
-    theme: TemplateTheme.Code);
+    encoder: TemplateOutputEncoder.Ansi(TemplateTheme.Code));
 ```
 
 Themes can be customized by overriding the styles of a base theme:
