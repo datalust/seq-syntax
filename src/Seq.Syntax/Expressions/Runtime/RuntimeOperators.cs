@@ -551,6 +551,29 @@ static class RuntimeOperators
         return JsonValue.Create(Uri.EscapeDataString(value));
     }
 
+    public static EvaluationResult ToJson(JsonNode? value)
+    {
+        // Serializes over the *inserted* form of a typed scalar: `Values.Clone` degrades a level
+        // to its string moniker and rejects pre-encoded `unsafe()` output. Nodes nested within
+        // containers were already degraded when they were inserted.
+        var node = value is JsonValue ? Values.Clone(value) : value;
+        return JsonValue.Create(node?.ToJsonString() ?? "null");
+    }
+
+    public static EvaluationResult FromJson(string json)
+    {
+        try
+        {
+            // `Parse` returns null for the JSON literal `null`.
+            return EvaluationResult.Defined(JsonNode.Parse(json));
+        }
+        catch (JsonException)
+        {
+            Diagnostics.RecordSuppressedError(Diagnostics.ErrorKinds.InvalidJson);
+            return EvaluationResult.Undefined;
+        }
+    }
+
     public static EvaluationResult IsSpan(JsonObject eventJson)
     {
         return ScalarBoolean(eventJson.ContainsKey("@tr") &&

@@ -118,6 +118,12 @@ static class KeywordProperties
         return properties;
     }
 
+    // The complete event document, verbatim.
+    public static EvaluationResult GetData(JsonObject eventJson)
+    {
+        return Values.Clone(eventJson);
+    }
+
     public static EvaluationResult GetStart(JsonObject eventJson)
     {
         return GetTimestampField(eventJson, "@st") is { } dto

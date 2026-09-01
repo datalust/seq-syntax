@@ -24,7 +24,6 @@ using Seq.Syntax.Templates.Compilation;
 using Seq.Syntax.Templates.Compilation.NameResolution;
 using Seq.Syntax.Templates.Encoding;
 using Seq.Syntax.Templates.Parsing;
-using Seq.Syntax.Templates.Themes;
 
 namespace Seq.Syntax.Compatibility;
 
@@ -37,7 +36,7 @@ public static class V1
     public static bool TryCompileExpression(
         string expression,
         CultureInfo? formatProvider,
-        NameResolver nameResolver,
+        NameResolver? nameResolver,
         [MaybeNullWhen(false)] out CompiledExpression result,
         [MaybeNullWhen(true)] out string error)
     {
@@ -59,7 +58,7 @@ public static class V1
         return true;
     }
 
-    /// <inheritdoc cref="ExpressionTemplate.TryParse(string,CultureInfo?,NameResolver?,TemplateTheme?,TemplateOutputEncoder?,out ExpressionTemplate,out string)"/>
+    /// <inheritdoc cref="ExpressionTemplate.TryParse(string,CultureInfo?,NameResolver?,TemplateOutputEncoder?,out ExpressionTemplate,out string)"/>
     public static bool TryParseTemplate(
         string template,
         CultureInfo? culture,

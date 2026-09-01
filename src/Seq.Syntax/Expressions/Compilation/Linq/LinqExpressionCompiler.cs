@@ -533,9 +533,10 @@ class LinqExpressionCompiler : SeqExpressionTransformer<ExpressionBody>
                     return Splice(context => Intrinsics.GetPropertyValue(context, "@ra"));
                 case KeywordProperties.Scope:
                     return Splice(context => Intrinsics.GetPropertyValue(context, "@sa"));
+                case KeywordProperties.Data:
+                    return Splice(context => KeywordProperties.GetData(context.Document));
                 case KeywordProperties.Arrived:
                 case KeywordProperties.Document:
-                case KeywordProperties.Data:
                     return UndefinedConstant;
             }
 

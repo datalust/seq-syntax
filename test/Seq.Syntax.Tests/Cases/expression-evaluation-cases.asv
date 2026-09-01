@@ -341,8 +341,36 @@ uriencode(undefined())               ⇶ undefined()
 uriencode('')                        ⇶ ''
 uriencode(' ')                       ⇶ '%20'
 
+// JSON serialization
+tojson(42)                           ⇶ '42'
+tojson('a')                          ⇶ '"a"'
+tojson(true)                         ⇶ 'true'
+tojson(null)                         ⇶ 'null'
+tojson(undefined())                  ⇶ undefined()
+tojson([1, 'b', null])               ⇶ '[1,"b",null]'
+tojson({a: 1})                       ⇶ '{"a":1}'
+tojson(@Level)                       ⇶ '"Information"'
+
+// JSON deserialization
+fromjson('{"a": [1, null, "x"]}')    ⇶ {a: [1, null, 'x']}
+fromjson('  true ')                  ⇶ true
+fromjson('null')                     ⇶ null
+fromjson('')                         ⇶ undefined()
+fromjson('{"a":')                    ⇶ undefined()
+fromjson(42)                         ⇶ undefined()
+fromjson(null)                       ⇶ undefined()
+fromjson(undefined())                ⇶ undefined()
+fromjson(tojson({a: [1, 'b']}))      ⇶ {a: [1, 'b']}
+
 tostring(@Level, 'u3')               ⇶ 'INF'
 tostring(@Elapsed)                   ⇶ '00:10:00'
+
+// The whole event document via @Data (@Document is deprecated and thus left undefined).
+@Data['@mt']                         ⇶ @mt
+@Data['User']['Name']                ⇶ 'nblumhardt'
+@Data['@Nonexistent']                ⇶ undefined()
+@Document                            ⇶ undefined()
+@Arrived                             ⇶ undefined()
 
 // Typed values keep their string forms when inserted into constructed containers
 [@Level][0]                          ⇶ 'Information'

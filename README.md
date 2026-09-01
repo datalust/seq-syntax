@@ -88,7 +88,7 @@ terminal output:
 ```csharp
 var template = new ExpressionTemplate(
     "[{@Timestamp:HH:mm:ss} {@Level:u3}] {@Message}\n{@Exception}",
-    theme: TemplateTheme.Code);
+    encoder: TemplateOutputEncoder.Ansi(TemplateTheme.Code));
 ```
 
 Themes can be customized by overriding the styles of a base theme:
@@ -102,14 +102,14 @@ var custom = new AnsiTheme((AnsiTheme)TemplateTheme.Literate, new Dictionary<Tem
 
 ### Escaping text inserted into HTML message bodies
 
-`TemplateOutputEscaper.Html` escapes event-derived values automatically, so they can be safely
+`TemplateOutputEncoder.Html` escapes event-derived values automatically, so they can be safely
 inserted into HTML attributes and element bodies (excluding script and style contexts, in which
 no safe escaping is possible).
 
 ```csharp
 var template = new ExpressionTemplate(
     "<p>{@Message}</p>",
-    escaper: TemplateOutputEscaper.Html);
+    encoder: TemplateOutputEncoder.Html);
 ```
 
 Where an event property is known to contain trusted, well-formed HTML, `{unsafe(Markup)}`

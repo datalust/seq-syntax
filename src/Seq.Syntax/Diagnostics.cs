@@ -50,6 +50,9 @@ static class Diagnostics
         // A regular expression driven to its match timeout by adversarial input.
         public const string RegexTimeout = "regex_timeout";
 
+        // A `FromJson()` argument that couldn't be parsed as JSON.
+        public const string InvalidJson = "invalid_json";
+
         // A comparison or render abandoned because the data nested too deeply for the stack.
         public const string RecursionDepth = "recursion_depth";
     }
