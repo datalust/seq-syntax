@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Nodes;
 using Seq.Syntax.Expressions;
 using Seq.Syntax.Templates;
@@ -13,12 +14,85 @@ public class MessageRenderingTests
         ["@mt"] = messageTemplate
     };
 
-    static string Render(JsonObject evt)
+    static string Render(JsonObject evt, string template = "{@Message}")
     {
-        var template = new ExpressionTemplate("{@Message}");
         var output = new StringWriter();
-        template.Format(evt, output);
+        new ExpressionTemplate(template, culture: CultureInfo.InvariantCulture).Format(evt, output);
         return output.ToString();
+    }
+
+    static string RenderScalar(JsonNode? value, string? format = null)
+    {
+        var evt = MessageEvent(format == null ? "{V}" : $"{{V:{format}}}");
+        evt["V"] = value;
+        return Render(evt);
+    }
+
+    public static IEnumerable<object?[]> TypedScalarCases()
+    {
+        // Every CLR type accepted by JsonValue.Create(), plus the runtime's own typed values.
+        yield return [JsonValue.Create("s"), "s"];
+        yield return [JsonValue.Create('c'), "c"];
+        yield return [JsonValue.Create(true), "True"];
+        yield return [JsonValue.Create(false), "False"];
+        yield return [JsonValue.Create((byte)1), "1"];
+        yield return [JsonValue.Create((sbyte)-1), "-1"];
+        yield return [JsonValue.Create((short)-2), "-2"];
+        yield return [JsonValue.Create((ushort)2), "2"];
+        yield return [JsonValue.Create(-3), "-3"];
+        yield return [JsonValue.Create(3u), "3"];
+        yield return [JsonValue.Create(-4L), "-4"];
+        yield return [JsonValue.Create(4UL), "4"];
+        yield return [JsonValue.Create(1.5f), "1.5"];
+        yield return [JsonValue.Create(2.5), "2.5"];
+        yield return [JsonValue.Create(3.5m), "3.5"];
+        yield return [JsonValue.Create(Guid.Parse("0e2f7a0c-0b7e-4a3e-9f2a-6a4b2f6f2e1d")), "0e2f7a0c-0b7e-4a3e-9f2a-6a4b2f6f2e1d"];
+        yield return [JsonValue.Create(new DateTime(2026, 8, 27, 1, 2, 3, DateTimeKind.Utc)), "2026-08-27T01:02:03.0000000Z"];
+        yield return [JsonValue.Create(new DateTime(2026, 8, 27, 1, 2, 3, DateTimeKind.Unspecified)), "2026-08-27T01:02:03.0000000"];
+        yield return [JsonValue.Create(new DateTimeOffset(2026, 8, 27, 1, 2, 3, TimeSpan.Zero)), "2026-08-27T01:02:03.0000000Z"];
+        yield return [JsonValue.Create(new DateTimeOffset(2026, 8, 27, 1, 2, 3, TimeSpan.FromHours(10))), "2026-08-27T01:02:03.0000000+10:00"];
+        yield return [JsonValue.Create(new TimeSpan(1, 2, 3, 4, 500)), "1.02:03:04.5000000"];
+        yield return [JsonValue.Create(TimeSpan.FromMinutes(-90)), "-01:30:00"];
+        yield return [null, "null"];
+    }
+
+    [Theory]
+    [MemberData(nameof(TypedScalarCases))]
+    public void TypedScalarsHaveReasonableDefaultRendering(JsonNode? value, string expected)
+    {
+        Assert.Equal(expected, RenderScalar(value));
+    }
+
+    [Theory]
+    [InlineData("yyyy-MM-dd", "2026-08-27")]
+    [InlineData("HH:mm", "01:02")]
+    public void DateTimeValuesHonorFormatSpecifiers(string format, string expected)
+    {
+        Assert.Equal(expected, RenderScalar(JsonValue.Create(new DateTimeOffset(2026, 8, 27, 1, 2, 3, TimeSpan.Zero)), format));
+        Assert.Equal(expected, RenderScalar(JsonValue.Create(new DateTime(2026, 8, 27, 1, 2, 3, DateTimeKind.Utc)), format));
+    }
+
+    [Fact]
+    public void OtherFormattableScalarsHonorFormatSpecifiers()
+    {
+        Assert.Equal("00000000000000000000000000000000", RenderScalar(JsonValue.Create(Guid.Empty), "N"));
+        Assert.Equal("1:02", RenderScalar(JsonValue.Create(new TimeSpan(1, 2, 0)), "h\\:mm"));
+        Assert.Equal("0042", RenderScalar(JsonValue.Create(42), "0000"));
+        Assert.Equal("0042", RenderScalar(JsonValue.Create(42m), "0000"));
+    }
+
+    [Fact]
+    public void InvalidFormatSpecifiersFallBackToDefaultRendering()
+    {
+        // A trailing escape character is an invalid date/time format string.
+        var value = JsonValue.Create(new DateTimeOffset(2026, 8, 27, 1, 2, 3, TimeSpan.Zero));
+        Assert.Equal("2026-08-27T01:02:03.0000000Z", RenderScalar(value, "\\"));
+    }
+
+    [Fact]
+    public void UnknownScalarTypesRenderViaToString()
+    {
+        Assert.Equal("(1, 2)", RenderScalar(JsonValue.Create((1, 2))));
     }
 
     [Fact]

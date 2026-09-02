@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Seq.Syntax.Templates.Encoding;
+using Seq.Syntax.Templates.Rendering;
 
 namespace Seq.Syntax.Expressions.Runtime;
 
@@ -264,6 +265,38 @@ static class Values
                 _ => "number"
             },
             _ => "null"
+        };
+    }
+
+    public static string? FormatScalarValue(object underlying, string? fmt, IFormatProvider? formatProvider)
+    {
+        try
+        {
+            return FormatScalarValueUnchecked(underlying, fmt, formatProvider);
+        }
+        catch (FormatException)
+        {
+            Diagnostics.RecordSuppressedError(Diagnostics.ErrorKinds.InvalidFormat);
+            return FormatScalarValueUnchecked(underlying, null, formatProvider);
+        }
+    }
+
+    static string? FormatScalarValueUnchecked(object underlying, string? fmt, IFormatProvider? formatProvider)
+    {
+        return underlying switch
+        {
+            JsonElement { ValueKind: JsonValueKind.String } element => Values.TryGetElementString(element, out var s) ? s : null,
+            JsonElement { ValueKind: JsonValueKind.True } => "true",
+            JsonElement { ValueKind: JsonValueKind.False } => "false",
+            JsonElement { ValueKind: JsonValueKind.Number } element =>
+                (element.TryGetDecimal(out var dec) ? dec : (IFormattable)element.GetDouble()).ToString(fmt, formatProvider),
+            bool boolean => boolean ? "true" : "false",
+            DateTimeOffset dto when dto.Offset == TimeSpan.Zero && fmt == null => dto.UtcDateTime.ToString("O"),
+            DateTimeOffset dto when fmt == null => dto.ToString("O"),
+            DateTime dt when fmt == null => dt.ToString("O"),
+            LevelValue level => LevelRenderer.GetLevelMoniker(level, fmt),
+            IFormattable formattable => formattable.ToString(fmt, formatProvider),
+            var other => other.ToString()
         };
     }
 }

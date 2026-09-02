@@ -201,7 +201,8 @@ class CompiledMessageToken : CompiledTemplate
             return;
         }
 
-        switch (Values.Underlying(scalar))
+        var underlying = Values.Underlying(scalar);
+        switch (underlying)
         {
             case JsonElement { ValueKind: JsonValueKind.String } element:
             {
@@ -213,70 +214,50 @@ class CompiledMessageToken : CompiledTemplate
                 }
                 break;
             }
-            case JsonElement { ValueKind: JsonValueKind.True }:
-            {
-                using var _ = _boolean.Open(output, ref invisibleCharacterCount);
-                _encoder.WriteContent(output, bool.TrueString);
-                break;
-            }
-            case JsonElement { ValueKind: JsonValueKind.False }:
-            {
-                using var _ = _boolean.Open(output, ref invisibleCharacterCount);
-                _encoder.WriteContent(output, bool.FalseString);
-                break;
-            }
-            case JsonElement { ValueKind: JsonValueKind.Number } element:
-            {
-                using var _ = _number.Open(output, ref invisibleCharacterCount);
-                _encoder.WriteContent(output, element.TryGetDecimal(out var dec)
-                    ? SafeFormat(dec, format, _formatProvider)
-                    : SafeFormat(element.GetDouble(), format, _formatProvider));
-                break;
-            }
             case string str:
             {
                 using var _ = _string.Open(output, ref invisibleCharacterCount);
                 _encoder.WriteContent(output, str);
                 break;
             }
-            case bool b:
+            case char c:
+            {
+                using var _ = _string.Open(output, ref invisibleCharacterCount);
+                _encoder.WriteContent(output, c.ToString());
+                break;
+            }
+            case JsonElement { ValueKind: JsonValueKind.True } or true:
             {
                 using var _ = _boolean.Open(output, ref invisibleCharacterCount);
-                _encoder.WriteContent(output, b ? bool.TrueString : bool.FalseString);
+                _encoder.WriteContent(output, bool.TrueString);
                 break;
             }
-            case int or uint or long or ulong or decimal or byte or sbyte or short or ushort or double or float:
+            case JsonElement { ValueKind: JsonValueKind.False } or false:
             {
-                using var _ = _number.Open(output, ref invisibleCharacterCount);
-                _encoder.WriteContent(output, SafeFormat((IFormattable)Values.Underlying(scalar), format, _formatProvider));
+                using var _ = _boolean.Open(output, ref invisibleCharacterCount);
+                _encoder.WriteContent(output, bool.FalseString);
                 break;
             }
-            case IFormattable formattable:
+            case JsonElement { ValueKind: JsonValueKind.Number }
+                or int or uint or long or ulong or decimal or byte or sbyte or short or ushort or double or float:
             {
-                using var _ = _scalar.Open(output, ref invisibleCharacterCount);
-                _encoder.WriteContent(output, SafeFormat(formattable, format, _formatProvider));
+                WriteFormattedScalar(_number, underlying, format, output, ref invisibleCharacterCount);
                 break;
             }
-            case var other:
+            default:
             {
-                using var _ = _scalar.Open(output, ref invisibleCharacterCount);
-                _encoder.WriteContent(output, other.ToString() ?? "");
+                // DateTime, DateTimeOffset, TimeSpan, Guid, and anything else. No case is needed for
+                // LevelValue: it's produced only by keyword properties, never captured by a message template.
+                WriteFormattedScalar(_scalar, underlying, format, output, ref invisibleCharacterCount);
                 break;
             }
         }
     }
 
-    static string SafeFormat(IFormattable value, string? format, IFormatProvider? formatProvider)
+    void WriteFormattedScalar(Run run, object underlying, string? format, TextWriter output, ref int invisibleCharacterCount)
     {
-        try
-        {
-            return value.ToString(format, formatProvider);
-        }
-        catch (FormatException)
-        {
-            Diagnostics.RecordSuppressedError(Diagnostics.ErrorKinds.InvalidFormat);
-            return value.ToString(null, formatProvider);
-        }
+        using var _ = run.Open(output, ref invisibleCharacterCount);
+        _encoder.WriteContent(output, Values.FormatScalarValue(underlying, format, _formatProvider) ?? "");
     }
 
     static bool TryGetNextStep(ReadOnlySpan<char> path, out ReadOnlySpan<char> name, out ReadOnlySpan<char> rest)
