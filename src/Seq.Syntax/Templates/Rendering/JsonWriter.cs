@@ -45,13 +45,7 @@ class JsonWriter
         _null = encoder.GetRun(TemplateThemeStyle.Null);
         _scalar = encoder.GetRun(TemplateThemeStyle.Scalar);
     }
-
-    public void Format(JsonNode? value, TextWriter output)
-    {
-        var invisibleCharacterCount = 0;
-        Format(value, output, ref invisibleCharacterCount);
-    }
-
+    
     public void Format(JsonNode? value, TextWriter output, ref int invisibleCharacterCount)
     {
         try
