@@ -12,22 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Seq.Syntax.Expressions.Runtime;
 
-/// <summary>
-/// The typed value of the <c>@Level</c> keyword property: the level name exactly as spelled in
-/// the document's <c>@l</c> (<c>Information</c> when absent). Distinguishes levels from plain
-/// strings so that fixed-width moniker formats apply.
-/// </summary>
-/// <remarks>Serializes as its name, so that a level handed to a caller through
-/// <see cref="EvaluationResult"/> degrades to a JSON string when cloned or written, rather than
-/// to an object carrying the wrapper's own fields.</remarks>
-[JsonConverter(typeof(LevelValueJsonConverter))]
-sealed class LevelValue(string name)
+sealed class LevelValueJsonConverter : JsonConverter<LevelValue>
 {
-    public string Name { get; } = name;
+    public override LevelValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return LevelMapping.ToLevelValue(reader.GetString());
+    }
 
-    public override string ToString() => Name;
+    public override void Write(Utf8JsonWriter writer, LevelValue value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.Name);
+    }
 }
