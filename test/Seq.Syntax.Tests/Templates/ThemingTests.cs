@@ -28,20 +28,26 @@ public class ThemingTests
     [Fact]
     public void MessageHoleScalarKindsSelectStyles()
     {
-        var evt = MessageEvent("x{S}{N}{B}{Z}{G}{Missing}");
+        var evt = MessageEvent("x{S}{C}{N}{D}{B}{Z}{G}{T}{Missing}");
         evt["S"] = "s";
+        evt["C"] = JsonValue.Create('c');
         evt["N"] = 1;
+        evt["D"] = JsonValue.Create(2.5);
         evt["B"] = true;
         evt["Z"] = null;
         evt["G"] = JsonValue.Create(Guid.Empty);
+        evt["T"] = JsonValue.Create(new DateTimeOffset(2026, 8, 30, 1, 2, 3, TimeSpan.Zero));
 
         Assert.Equal(
             "<Text>x</Text>" +
             "<String>s</String>" +
+            "<String>c</String>" +
             "<Number>1</Number>" +
+            "<Number>2.5</Number>" +
             "<Boolean>True</Boolean>" +
             "<Null>null</Null>" +
             $"<Scalar>{Guid.Empty}</Scalar>" +
+            "<Scalar>2026-08-30T01:02:03.0000000Z</Scalar>" +
             "<Invalid>{Missing}</Invalid>",
             RenderMarked("{@Message}", evt));
     }

@@ -500,40 +500,10 @@ static class RuntimeOperators
                 return EvaluationResult.Undefined;
         }
 
-        string? toString;
-        try
-        {
-            toString = FormatScalarValue(Values.Underlying(scalar), fmt, formatProvider);
-        }
-        catch (FormatException)
-        {
-            // An invalid format specifier degrades to default formatting rather than throwing.
-            Diagnostics.RecordSuppressedError(Diagnostics.ErrorKinds.InvalidFormat);
-            toString = FormatScalarValue(Values.Underlying(scalar), null, formatProvider);
-        }
-
+        var toString = Values.FormatScalarValue(Values.Underlying(scalar), fmt, formatProvider);
         return toString == null ? EvaluationResult.Undefined : JsonValue.Create(toString);
     }
-
-    static string? FormatScalarValue(object underlying, string? fmt, IFormatProvider? formatProvider)
-    {
-        return underlying switch
-        {
-            JsonElement { ValueKind: JsonValueKind.String } element => Values.TryGetElementString(element, out var s) ? s : null,
-            JsonElement { ValueKind: JsonValueKind.True } => "true",
-            JsonElement { ValueKind: JsonValueKind.False } => "false",
-            JsonElement { ValueKind: JsonValueKind.Number } element =>
-                (element.TryGetDecimal(out var dec) ? dec : (IFormattable)element.GetDouble()).ToString(fmt, formatProvider),
-            bool boolean => boolean ? "true" : "false",
-            DateTimeOffset dto when dto.Offset == TimeSpan.Zero && fmt == null => dto.UtcDateTime.ToString("O"),
-            DateTimeOffset dto when fmt == null => dto.ToString("O"),
-            DateTime dt when fmt == null => dt.ToString("O"),
-            LevelValue level => LevelRenderer.GetLevelMoniker(level, fmt),
-            IFormattable formattable => formattable.ToString(fmt, formatProvider),
-            var other => other.ToString()
-        };
-    }
-
+    
     public static EvaluationResult UtcDateTime(DateTimeOffset dateTime)
     {
         return JsonValue.Create(dateTime.UtcDateTime);
