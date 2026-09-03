@@ -350,6 +350,12 @@ tojson(undefined())                  ⇶ undefined()
 tojson([1, 'b', null])               ⇶ '[1,"b",null]'
 tojson({a: 1})                       ⇶ '{"a":1}'
 tojson(@Level)                       ⇶ '"Information"'
+// HTML-sensitive and non-ASCII characters are emitted literally rather than as `\uXXXX` escapes
+tojson('<a href="x">&</a>')          ⇶ '"<a href=\"x\">&</a>"'
+tojson('it''s 1+1')                  ⇶ '"it''s 1+1"'
+tojson('日本語 Ñandú')                ⇶ '"日本語 Ñandú"'
+tojson({'名前': '値'})                ⇶ '{"名前":"値"}'
+tojson(['<', '>', '&', '''', '+'])   ⇶ '["<",">","&","''","+"]'
 
 // JSON deserialization
 fromjson('{"a": [1, null, "x"]}')    ⇶ {a: [1, null, 'x']}

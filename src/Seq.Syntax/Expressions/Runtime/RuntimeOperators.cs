@@ -14,6 +14,7 @@
 
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Seq.Syntax.Expressions.Compilation.Linq;
@@ -25,6 +26,13 @@ namespace Seq.Syntax.Expressions.Runtime;
 
 static class RuntimeOperators
 {
+    static readonly JsonSerializerOptions ToJsonSerializerOptions = new()
+    {
+        // Avoids defense-in-depth encoding of HTML content chars/non-ASCII data, which renders the results unreadable
+        // for many non-Latin languages.
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
     internal static EvaluationResult ScalarBoolean(bool value)
     {
         return JsonValue.Create(value);
@@ -552,12 +560,10 @@ static class RuntimeOperators
     }
 
     public static EvaluationResult ToJson(JsonNode? value)
-    {
-        // Serializes over the *inserted* form of a typed scalar: `Values.Clone` degrades a level
-        // to its string moniker and rejects pre-encoded `unsafe()` output. Nodes nested within
-        // containers were already degraded when they were inserted.
+    { 
+        // `Values.Clone` handles the level wrapper type and rejects pre-encoded `unsafe()` output.
         var node = value is JsonValue ? Values.Clone(value) : value;
-        return JsonValue.Create(node?.ToJsonString() ?? "null");
+        return JsonValue.Create(node?.ToJsonString(ToJsonSerializerOptions) ?? "null");
     }
 
     public static EvaluationResult FromJson(string json)
