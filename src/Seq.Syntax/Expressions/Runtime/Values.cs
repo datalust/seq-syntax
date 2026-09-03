@@ -40,9 +40,9 @@ static class Values
         {
             switch (Underlying(value))
             {
-                // Typed scalars degrade to their JSON string forms on insertion; `DeepClone()` does
-                // this for the serializer-supported ones, but a `LevelValue` would clone as a
-                // `{"Name": ...}` object.
+                // Typed scalars degrade to their JSON string forms on insertion. `DeepClone()` does
+                // this too, via each type's serializer support, but for a `LevelValue` the direct
+                // conversion avoids a serializer round-trip.
                 case LevelValue level:
                     return JsonValue.Create(level.Name);
                 // `unsafe()` output has no JSON form to degrade to: `DeepClone()` would serialize

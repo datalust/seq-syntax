@@ -49,6 +49,21 @@ public class ValueMechanicsTests
     }
 
     [Fact]
+    public void LevelValuesHandedToCallersCloneAsStrings()
+    {
+        // A caller re-parenting a `@Level` result, e.g. `seqcli search --column @Level`, sees a
+        // JSON string rather than the wrapper's fields.
+        var evt = new JsonObject { ["@l"] = "Warning" };
+        var expr = SeqExpression.Compile("@Level");
+
+        Assert.True(expr(evt).TryGetValue(out var level));
+        var enriched = new JsonObject { ["Column"] = level!.DeepClone() };
+
+        Assert.Equal("Warning", (string)enriched["Column"]!);
+        Assert.Equal("""{"Column":"Warning"}""", enriched.ToJsonString());
+    }
+
+    [Fact]
     public void CallablesCanBeWrappedAndRecovered()
     {
         var callable = Values.MakeCallable(r => r);
